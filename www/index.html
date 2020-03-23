@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html class="no-js" lang="">
+  <head>
+    <link rel="icon" href="favicon.ico" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="description" content="" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>SenceIt Node</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <script>
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4) {
+          if (this.status == 200) {
+            document.getElementById("status").innerHTML = this.responseText;
+          } else {
+            document.getElementById("status").innerHTML = "Disconnected";
+          }
+        }
+      };
+
+      function powerSwitch() {
+        xhttp.open("GET", "/switch", true);
+        xhttp.send();
+      }
+    </script>
+  </head>
+  <body>
+    <!--[if lte IE 9]>
+      <p class="browserupgrade">
+        You are using an <strong>outdated</strong> browser. Please
+        <a href="https://browsehappy.com/">upgrade your browser</a> to improve
+        your experience and security.
+      </p>
+    <![endif]-->
+
+    <div class="bg-black pv2 ph2 row">
+      <div class="col">
+        <a href="" class="white ph2">SenceIt Node</a>
+      </div>
+      <div class="2 col">
+        <a id="deviceId" href="" class="white ph2">FG65FD</a>
+      </div>
+    </div>
+
+    <div class="c">
+      <form id="input" class="form">
+        <!-- ConnectionComponent -->
+        <div id="connectionComponent">
+          <h3>Connection Settings</h3>
+          <div class="row">
+            <label class="3 col">Wifi Network:</label>
+            <select class="2 col card w-100" id="ssid">
+              <option>Please select Wifi SSID</option>
+            </select>
+            <!-- <input
+              class="2 col card w-100"
+              type="text"
+              id="ssid"
+              placeholder="WiFi SSID..."
+              pattern=".{1,}"
+              required
+              title="Please enter a valid SSID."
+            /> -->
+          </div>
+          <div class="row">
+            <label class="3 col">Password:</label>
+            <input
+              class="2 col card w-100"
+              type="password"
+              id="wifiPwd"
+              placeholder="Wifi password..."
+            />
+          </div>
+          <div class="row">
+            <div class="3 col"></div>
+            <input class="card" type="checkbox" id="showPwd" />
+            <span class="small">Show password</span>
+          </div>
+
+          <div class="row">
+            <label class="3 col">SenceIt Ctrl Hostname/IP:</label>
+            <input
+              class="3 col card w-100"
+              type="text"
+              id="ctrlIp"
+              placeholder="e.g. 10.0.0.1 or example.com"
+              required
+              title="Please enter a valid domain"
+            />
+          </div>
+        </div>
+
+        <!-- ConfigurationComponent  -->
+        <div class="w-100" id="configComponent">
+          <h3>Node Configuration</h3>
+          <div class="row">
+            <div class="2 col">
+              <select id="classType" class="card">
+                <option value="sensor">Sensor</option>
+                <option value="actuator">Actuator</option>
+              </select>
+            </div>
+            <div class="2 col">
+              <select id="sensorType" class="card" disabled="true"> </select>
+            </div>
+            <div class="2 col">
+              <select id="sensor_interval" class="card" disabled="true">
+                <option value="1m">1 Minute</option>
+                <option value="5m">5 Minutes</option>
+                <option value="10m">10 Minutes</option>
+                <option value="30m">30 Minutes</option>
+                <option value="1h">1 Hour</option>
+                <option value="6h">12 Hours</option>
+                <option value="24h">24 Hours</option>
+              </select>
+            </div>
+            <div class="2 col">
+              <input
+                class="card"
+                type="text"
+                id="sensor_topic"
+                placeholder="MQTT Topic"
+                disabled="true"
+                pattern="(?=[^/].*)(\S*)"
+                required
+                title="MQTT Topics cannot start with an / or contain spaces"
+                value="my/mqtt/topic"
+              />
+            </div>
+            <div class="2 col">
+              <button type="button" class="btn" id="addBtn">
+                Add IO
+              </button>
+            </div>
+          </div>
+
+          <table class="table w-100" id="ioTable">
+            <thead>
+              <th>Class</th>
+              <th>Type</th>
+              <th>Interval</th>
+              <th>Topic</th>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="pull-right">
+          <button class="btn" type="button" id="cancelBtn">Cancel</button>
+          <button class="btn bg-success b-success" type="button" id="saveBtn">
+            Save settings
+          </button>
+        </div>
+      </form>
+    </div>
+    <script src="js/scripts.js "></script>
+  </body>
+</html>
