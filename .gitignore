@@ -3,3 +3,5 @@ build/**
 firmware/**
 webrepl/**
 **.pyc
+
+.vscode/**
