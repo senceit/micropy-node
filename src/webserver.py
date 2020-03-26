@@ -27,7 +27,9 @@ class StringBuilder:
         self.string = []
 
     def add(self, text):
-        self.string.append(text)
+        if text is None or text == "":
+            return self
+        self.string.append(str(text))
         return self
 
     def space(self):
@@ -47,8 +49,8 @@ class StringBuilder:
 
 
 class Route:
-    def __init__(self, method: HTTP_METHOD, route: str):
-        self.path = route
+    def __init__(self, method: HTTP_METHOD, path: str):
+        self.path = path
         self.method = method
 
     def __eq__(self, other):
@@ -61,21 +63,27 @@ class Route:
 
 
 class HttpRequest:
-    def __init__(self, route, headers, query=None, body=None):
+    def __init__(
+        self, route: Route, headers, query=None, body=None, protocol="http", domain=None
+    ):
         self.route = route
-        self.headers = headers
+        self.header = headers
         self.query = query if query else {}
-        self.body = body if body else {}
+        self.body = body
+        self.protocol = protocol
+        self.domain = domain
+
 
 class HttpResponse:
-    '''
-    *Immutable* data object
-    '''
+    """
+    *Immutable* data class
+    """
 
-    def __init__(self, status, headers: dict, body=None):
+    def __init__(self, status, mime, headers: dict, body=None):
         self.headers = headers
         self.body = body
         self.status = status
+        self.mime_type = mime
         self._response = StringBuilder()
 
         self._add_protocol_header()
@@ -86,11 +94,17 @@ class HttpResponse:
         return self._response.build()
 
     def _add_protocol_header(self):
-        self._response.add(Http.VERSION).space().add(Http.STATUS_CODE[self.status]).newline()
+        self._response.add(Http.VERSION).space().add(
+            Http.STATUS_CODE[self.status]
+        ).newline()
 
     def _add_headers(self):
-        if ("Server" not in self.headers):
+        if not self.headers:
+            self.headers = {}
+        if "Server" not in self.headers:
             self.headers["Server"] = Http.SERVER
+        if "Content-Type" not in self.headers:
+            self.headers["Content-Type"] = self.mime_type
 
         for k, v in self.headers.items():
             self._response.add(k).add(":").space().add(v).newline()
@@ -102,77 +116,199 @@ class HttpResponse:
         dict - json
         """
 
-        if ("Content-type" not in self.headers):
-            self.headers["Content-type"] = Http.MIME_TYPE["JSON"] + ";" + Http.CHARSET
-
-        self._response.add(json.dumps(self.body)).newline()
+        if type(self.body) != dict:
+            self._response.add(self.body).newline()
+        else:
+            self._response.add(json.dumps(self.body)).newline()
 
     @staticmethod
     def err(self, code, message=None):
         """
         Response error message to client
         """
-        response = HttpResponse(code, [], { "error": message })
-        return response
+        return HttpResponse(code, Http.MIME_TYPE["JSON"], {}, {"error": message})
 
     # Response succesful message to client
     @staticmethod
-    def ok(code, msg: dict):
-        resp = HttpResponse()
-        resp._add_protocol_header(code)._add_body(msg)
-        return resp
+    def ok(
+        code, mime_type, headers=None, body=None,
+    ):
+        return HttpResponse(code, mime_type, headers, body)
+
 
 class RequestStreamParser:
-    def __init__(self):
-        self._first_line = None
-        self.request = None
 
-    def update(self, line):
-        request = line.split(" ")
-        if "?" in route:  # Check if there's query string?
-            (path, query) = route.split("?", 2)
+    SUPPORTED_HEADERS = [
+        "Accept",
+        "Accept-Encoding",
+        "Host",
+        "Connection",
+        "User-Agent",
+        "Content-Length",
+        "Content-Type",
+    ]
+
+    def __init__(self):
+        self._line = None
+        self._lines = 0
+        self._path = None
+        self._method = HTTP_METHOD.GET
+        self._protocol = None
+        self._domain = None
+        self._queries = {}
+        self._header = {}
+        self._version = None
+        self._break = False
+        self._content_length = None
+        self._body = None
+
+    def update(self, line) -> bool:
+        if line == "\n":
+            self._break = True
+
+        raw = line.rstrip()
+        self._lines += 1
+        self._line = raw
+
+        if self._lines == 1:
+            # first line
+            self.validate()
+            req = raw.split(" ", 2)
+            self._parse_method(req[0])
+            _path = req[1]
+            self._version = req[2]
+            self.validate()
+
+            if "http" in _path:
+                (self._protocol, _path) = _path.split("://", 1)
+            if not _path.startswith("/"):
+                (self._domain, _path) = _path.split("/", 1)
+                _path = "/" + _path
+            if "?" in _path:  # Check if there's query string?
+                (path, query) = _path.split("?", 1)
+                self._queries = self._parse_query(query)
+            else:
+                (path, query) = (_path, "")
+
+            self._path = path
+            return True
+
+        print(self._break)
+        if self._lines > 1 and not self._break:
+            self._parse_header(raw)
+            return True
+
+        if self._break and self._content_length and self._lines > 1:
+            return self._parse_body(raw)
+
+        return False
+
+    def _parse_body(self, line):
+        """
+        Parses the body line by line until the Content-Length
+        It accept only application/json as mime type for the body of requests
+
+        returns True when accepting more and False when the full body has been received
+        """
+        if not self._body:
+            self._body = ""
+        self._body += line
+
+        return len(self._body) != self._content_length
+
+    def _parse_header(self, line: str) -> dict:
+        """
+        Parses the following Request headers
+
+        - Accept
+        - Accept-Encoding
+        - Host
+        - Connection
+        - User-Agent
+        - Content-Length
+        - Content-Type
+
+        Ignores all others
+        """
+        for h in filter(lambda h: line.startswith(h + ":"), self.SUPPORTED_HEADERS):
+            (_, value) = line.split(": ", 2)
+            self._header[h] = value.strip()
+            if h == "Content-Length":
+                self._content_length = int(self._header[h])
+
+    def _parse_method(self, method) -> HTTP_METHOD:
+        if method == "GET":
+            self._method = HTTP_METHOD.GET
+        elif method == "PUT":
+            self._method = HTTP_METHOD.PUT
+        elif method == "POST":
+            self._method = HTTP_METHOD.POST
+        elif method == "DELETE":
+            self._method = HTTP_METHOD.DELETE
         else:
-            (path, query) = (route, "")
+            raise HttpError("Unsupported HTTP Method", 405)
+
+    def _parse_query(self, query):
         args = {}
-        if query:  # Parsing the querying string
+        if query:
+            # Parsing the query string
             argPairs = query.split("&")
             for argPair in argPairs:
                 arg = argPair.split("=")
                 args[arg[0]] = arg[1]
-        while True:
-            # Read until blank line after header
-            # TODO: should also read body of request
-            header = self.socket.readline()
-            if header == b"":
-                return
-            if header == b"\r\n":
-                break
 
-    def validate(self, request) -> Union[int, bool]:
-        if self._first_line:
-            request = raw.split(" ")
-            if len(request) != 3:  # Discarded if it's a bad header
-                return False
+        return args
 
-        # Check for supported HTTP version
-        if self.request.version != "HTTP/1.0" and self.request.version != "HTTP/1.1":
-            return 505
+    def validate(self):
+        if self._lines == 1:
+            req = self._line.split(" ")
+            if len(req) != 3:  # Discarded if it's a bad header
+                raise HttpError("Bad Request", 400)
+            # Check for supported HTTP version
+            if (
+                self._version
+                and self._version != "HTTP/1.0"
+                and self._version != "HTTP/1.1"
+            ):
+                raise HttpError("Version Not Supported", 505)
+
+    def get_request(self) -> HttpRequest:
+        route = Route(self._method, self._path)
+        return HttpRequest(
+            route,
+            self._header,
+            self._queries,
+            self._body,
+            self._protocol,
+            self._domain,
+        )
+
+
+class HttpError(Exception):
+    def __init__(self, msg, code):
+        super().__init__()
+        self.message = msg
+        self.code = code
+
+    def __str__(self):
+        return Http.STATUS_CODE[self.code]
 
 
 class Http:
     """
     Http class handles HTTP
     """
-    SERVER = "SenceIt MicroWebServer/1.0"
+
+    SERVER = "SenceIt muWebServer/1.0"
     VERSION = "HTTP/1.1"
     CHARSET = "charset=UTF-8"
 
     MIME_TYPE = {
-        "HTML": "text/html",
-        "TEXT": "text/plain",
-        "CSS": "text/css",
-        "JS": "text/javascript",
-        "JSON": "application/json",
+        "HTML": "text/html; " + CHARSET,
+        "TEXT": "text/plain; " + CHARSET,
+        "CSS": "text/css; " + CHARSET,
+        "JS": "text/javascript; " + CHARSET,
+        "JSON": "application/json; " + CHARSET,
         "PNG": "image/png",
         "SVG": "image/svg+xml",
         "JPG": "image/jpeg",
@@ -188,6 +324,7 @@ class Http:
         401: "401 Unauthorized",
         403: "403 Forbidden",
         404: "404 Not Found",
+        405: "405 Method not Allowed",
         500: "500 Internal Server Error",
         501: "501 Not Implemented",
         505: "505 HTTP Version Not Supported",
@@ -215,7 +352,7 @@ class Http:
             if request.route.method == HTTP_METHOD.GET and self._match_static_route(
                 request
             ):
-                self._static(request)
+                self.response = self._static(request)
 
             else:
                 self.response = HttpResponse.err(400)
@@ -237,30 +374,20 @@ class Http:
 
     def _static(self, request: HttpRequest):
         # Check for path to any document
+        fs = FileServer(self.www_root)
         try:
-            if (request.route.path == "/"):
+            if request.route.path == "/":
                 request.route.path = "/index.html"
-            file = self.www_root + request.route.route
-            print(file)
-
-            # Check for file existence
-            os.stat(self.www_root)
-
-            # Response header first
-            self._add_protocol_header(200)
+            file = request.route.path
+            mime_type, data, size = fs.read(file)
 
             # Respond with the file content
-            with open(file, "rb") as f:
-                while True:
-                    data = f.read(64)
-                    if data == b"":
-                        break
-                    self.response.append(data)
-            return
+            return HttpResponse.ok(
+                200, mime_type, body=data, headers={"Content-Length": size},
+            )
         except Exception as ex:
-            print(str(ex))
             # Can't find the file specified in path
-            self._err(404)
+            return HttpResponse.err(404, str(ex))
 
     def _match_route(self, request: HttpRequest) -> Union[Route, bool]:
         """
@@ -284,13 +411,64 @@ class Http:
         )
 
 
+class FileServer:
+    """
+    """
+
+    def __init__(self, root):
+        """
+        """
+        self.root = root
+
+    def resolve_type(self, path: str) -> str:
+        if path.lower().endswith("css"):
+            return Http.MIME_TYPE["CSS"]
+
+        if path.lower().endswith("html"):
+            return Http.MIME_TYPE["HTML"]
+
+        if path.lower().endswith("png"):
+            return Http.MIME_TYPE["PNG"]
+
+        if path.lower().endswith("jpg"):
+            return Http.MIME_TYPE["JPG"]
+
+        if path.lower().endswith("svg"):
+            return Http.MIME_TYPE["SVG"]
+
+        if path.lower().endswith("js"):
+            return Http.MIME_TYPE["JS"]
+
+        if path.lower().endswith("json"):
+            return Http.MIME_TYPE["JSON"]
+
+        if path.lower().endswith(("txt")):
+            return Http.MIME_TYPE["TEXT"]
+        else:
+            return Http.MIME_TYPE["BINARY"]
+
+    def read(self, path):
+        """
+        """
+
+        # Check if file exists
+        p = self.root + path
+        fstat = os.stat(p)
+        mime_type = self.resolve_type(path)
+
+        with open(p, "rb") as reader:
+            data = reader.read()
+
+        return (mime_type, data, fstat.st_size)
+
+
 class Webserver:
     """
     Very basic webserver that supports the following HTTP methods:
     GET, POST, PUT, DELETE
 
-    Custom route handlers can be registered, but they only support json response types
-    The body of all requests also only support json
+    Custom route handlers can be registered, but they only support application/json response types
+    The body of all requests also only supports application/json
 
     If no route is matched it will look for static files with the same route in the www_root directory of the file system
 
@@ -299,7 +477,7 @@ class Webserver:
     If no Content-Length is given, the server responds with 400 Bad request
     """
 
-    def __init__(self, http_handler):
+    def __init__(self, http_handler: Http):
 
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -341,16 +519,9 @@ class Webserver:
 
     def get_request(self, request) -> HttpRequest:
         parser = RequestStreamParser()
-        first_line = parser.update(str(self.socket.readline(), "utf-8"))
-        if not HttpRequest.validate_line_1(first_line):
-            return self.err(400)
+        status = parser.update(str(self.socket.readline(), "utf-8"))
 
-        request = []
-        request.append(first_line)
+        while status:
+            status = parser.update(str(self.socket.readline(), "utf-8"))
 
-        while True:
-            ## read until we get the Content-Length header and then continue until the end specified by length
-            line = self.socket.readline()
-            request.append(line)
-
-        return HttpRequest.parse(request)
+        return parser.get_request()

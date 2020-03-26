@@ -1,0 +1,13 @@
+POST /test HTTP/1.1
+Host: www.example.com
+Connection: keep-alive
+Content-Length: 18
+Cache-Control: no-cache
+User-Agent: Dummy-Agent
+Content-Type: application/json
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-GB,en-US;q=0.9,en;q=0.8
+
+{
+  "key": "value"
+}

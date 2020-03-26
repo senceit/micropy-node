@@ -1,0 +1,10 @@
+GET https://www.google.com/search?q=python+strip+newline&oq=python+strip+&aqs=chrome.3.69i57j0l7.6799j0j7&sourceid=chrome&ie=UTF-8 HTTP/1.1
+Host: www.google.com
+Connection: keep-alive
+Cache-Control: max-age=0
+DNT: 1
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-GB,en-US;q=0.9,en;q=0.8
