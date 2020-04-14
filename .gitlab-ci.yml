@@ -4,17 +4,19 @@ stages:
   - build
   - test
 
+default:
+  before_script:
+    - apt-get update -qq && apt-get install -yqq curl make
+    - curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+    - source $HOME/.poetry/env
+    - poetry install
+
 build:
   stage: build
   script:
-    - apt-get update -qq && apt-get install -yqq curl make
-    - curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-    - poetry install
     - make build-prod
 
 test:
   stage: test
   script:
-    - apt-get update -qq && apt-get install -yqq curl make
-    - poetry install
     - make test
