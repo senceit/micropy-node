@@ -1,0 +1,14 @@
+image: python:3.8-slim-buster
+
+stages:
+  - build
+  - test
+
+build:
+  script:
+    - curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+    - make build-prod
+
+test:
+  script:
+    - make test

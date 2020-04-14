@@ -5,3 +5,4 @@ webrepl/**
 **.pyc
 
 .vscode/**
+ctrl/data/**

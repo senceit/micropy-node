@@ -50,6 +50,14 @@ version = "7.1.1"
 
 [[package]]
 category = "dev"
+description = "micropython mpy-cross distribution"
+name = "mpy-cross"
+optional = false
+python-versions = "*"
+version = "1.12"
+
+[[package]]
+category = "dev"
 description = "Utility library for gitignore style pattern matching of file paths."
 name = "pathspec"
 optional = false
@@ -81,7 +89,7 @@ python-versions = "*"
 version = "1.4.1"
 
 [metadata]
-content-hash = "d75168d58176274758372e5caf28c7e597acb19fda84360c3ff79cb38346e996"
+content-hash = "4ae9b15621f25f51f301ad1863c8896edd968b6f9b88869b6c9680847adf3626"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -100,6 +108,13 @@ black = [
 click = [
     {file = "click-7.1.1-py2.py3-none-any.whl", hash = "sha256:e345d143d80bf5ee7534056164e5e112ea5e22716bbb1ce727941f4c8b471b9a"},
     {file = "click-7.1.1.tar.gz", hash = "sha256:8a18b4ea89d8820c5d0c7da8a64b2c324b4dabb695804dbfea19b9be9d88c0cc"},
+]
+mpy-cross = [
+    {file = "mpy_cross-1.12-py2.py3-none-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl", hash = "sha256:14be23507f39516b2ec869faae00726c92f5dc8df753390407653e37ba6b0783"},
+    {file = "mpy_cross-1.12-py2.py3-none-manylinux1_i686.whl", hash = "sha256:b870014c6ba8974aab880747ff762eb8bef3550f18f66f5cfdae4a6443332cd3"},
+    {file = "mpy_cross-1.12-py2.py3-none-manylinux1_x86_64.whl", hash = "sha256:14d14fdb1afbd700a91da50a6c35b43467d97c30ee8003c3212938a494968927"},
+    {file = "mpy_cross-1.12-py2.py3-none-win32.whl", hash = "sha256:2ff19640c1320ea2c387b02e790043bbcb1f4b07e489d08aa73736e7f553a0cd"},
+    {file = "mpy_cross-1.12-py2.py3-none-win_amd64.whl", hash = "sha256:2199dfc4858ef60860c2a7d538eb50ea21c161620b5309e80af6e536bf474086"},
 ]
 pathspec = [
     {file = "pathspec-0.7.0-py2.py3-none-any.whl", hash = "sha256:163b0632d4e31cef212976cf57b43d9fd6b0bac6e67c26015d611a647d5e7424"},
