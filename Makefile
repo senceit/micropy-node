@@ -1,7 +1,11 @@
 ip = ${IP}
 password = ${PASSWORD}
 
-all: clean build
+IN = $(wildcard src/*.py)
+IN2 = $(addsuffix .mpy,$(basename $(IN)))
+OUT = $(subst src/,build/, $(IN2))
+
+default: build-dev
 
 setup:
 	echo "Install webrepl"
@@ -11,16 +15,10 @@ setup:
 clean:
 	rm -rf build/*
 
-compile:
-	poetry run python -m mpy_cross src/uhttp.py -o build/uhttp.mpy
-	poetry run python -m mpy_cross src/webserver.py -o build/webserver.mpy
-	poetry run python -m mpy_cross src/app_config.py -o build/app_config.mpy
-	poetry run python -m mpy_cross src/app_run.py -o build/app_run.mpy
-	poetry run python -m mpy_cross src/util.py -o build/util.mpy
-	poetry run python -m mpy_cross src/stepper.py -o build/stepper.mpy
-	poetry run python -m mpy_cross src/config.py -o build/config.mpy
-	poetry run python -m mpy_cross src/esp8266.py -o build/esp8266.mpy
-	poetry run python -m mpy_cross src/esp_io.py -o build/esp_io.mpy
+build/%.mpy: src/%.py
+	poetry run python -m mpy_cross $< -o $@
+
+compile: $(OUT)
 
 build-common: clean compile
 	mkdir -p build/www/css
