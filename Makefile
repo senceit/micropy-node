@@ -12,15 +12,15 @@ clean:
 	rm -rf build/*
 
 compile:
-	python -m mpy_cross src/uhttp.py -o build/uhttp.mpy
-	python -m mpy_cross src/webserver.py -o build/webserver.mpy
-	python -m mpy_cross src/app_config.py -o build/app_config.mpy
-	python -m mpy_cross src/app_run.py -o build/app_run.mpy
-	python -m mpy_cross src/util.py -o build/util.mpy
-	python -m mpy_cross src/stepper.py -o build/stepper.mpy
-	python -m mpy_cross src/config.py -o build/config.mpy
-	python -m mpy_cross src/esp8266.py -o build/esp8266.mpy
-	python -m mpy_cross src/esp_io.py -o build/esp_io.mpy
+	poetry run python -m mpy_cross src/uhttp.py -o build/uhttp.mpy
+	poetry run python -m mpy_cross src/webserver.py -o build/webserver.mpy
+	poetry run python -m mpy_cross src/app_config.py -o build/app_config.mpy
+	poetry run python -m mpy_cross src/app_run.py -o build/app_run.mpy
+	poetry run python -m mpy_cross src/util.py -o build/util.mpy
+	poetry run python -m mpy_cross src/stepper.py -o build/stepper.mpy
+	poetry run python -m mpy_cross src/config.py -o build/config.mpy
+	poetry run python -m mpy_cross src/esp8266.py -o build/esp8266.mpy
+	poetry run python -m mpy_cross src/esp_io.py -o build/esp_io.mpy
 
 build-common: clean compile
 	mkdir -p build/www/css
