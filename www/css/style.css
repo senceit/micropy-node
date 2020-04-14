@@ -37,6 +37,9 @@ input:invalid:focus {
 .bg-black {
   background-color: #000;
 }
+.bg-gray {
+  background-color: #333333;
+}
 .b-black {
   border-color: #000;
 }
@@ -364,4 +367,18 @@ th {
   background: #fff;
   border: solid;
   font-size: 0.7em;
+}
+
+.btn-success {
+  padding: 1em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: #00c853;
+  border: solid;
+  font-size: 0.7em;
+}
+
+img {
+  max-width: 240px;
+  max-height: 42px;
 }

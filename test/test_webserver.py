@@ -1,12 +1,13 @@
-from webserver import (
+from util import StringBuilder
+
+from uhttp import (
     Http,
     RequestStreamParser,
     Route,
     HttpRequest,
-    StringBuilder,
     HTTP_METHOD,
     HttpResponse,
-    FileServer,
+    File,
 )
 
 import os
@@ -83,7 +84,7 @@ def test_http_handlers():
     http.register_handler(
         HTTP_METHOD.GET,
         "/config",
-        lambda http, req: HttpResponse.ok(200, Http.MIME_TYPE["JSON"]),
+        lambda req: HttpResponse.ok(200, Http.MIME_TYPE["JSON"]),
     )
 
     assert len(http.handlers.items()) == 1
@@ -108,28 +109,33 @@ def test_http_handlers():
 
 
 def test_fs():
-    fs = FileServer(os.getcwd())
-    path = "/www/img/SenceItLogo.png"
-    (m, d, s) = fs.read(path)
+    fs = File(os.getcwd())
+    path = "/www/img/silogo42x136.png"
+    (m, s, p) = fs.get_file_stat(path)
 
     assert m == Http.MIME_TYPE["PNG"]
-    assert s == 8849
+    assert s == 4127
 
 
 def test_static_image():
     http = Http()
     http.set_www_root(os.path.join(os.getcwd(), "www"))
     # GET image
-    req = HttpRequest(Route(HTTP_METHOD.GET, "/img/SenceItLogo.png"), {})
+    req = HttpRequest(Route(HTTP_METHOD.GET, "/img/silogo42x136.png"), {})
     http.handle(req)
 
     resp = http.get_response()
     assert resp.status == 200
     assert resp.mime_type == Http.MIME_TYPE["PNG"]
-    assert resp.headers["Content-Length"] == 8849
+    assert resp.headers["Content-Length"] == 4127
     assert resp.headers["Content-Type"] == Http.MIME_TYPE["PNG"]
     assert resp.headers["Server"] == Http.SERVER
+    assert resp.has_stream() is True
     assert resp.body is not None
+
+    with open(os.path.join(os.getcwd(), "test/image.png"), "wb") as dest:
+        resp.body.pipe(dest)
+
     assert str(resp).startswith("HTTP/1.1 200 OK\r\n")
 
 
@@ -144,7 +150,7 @@ def test_static_html():
     assert resp.status == 200
     assert resp.mime_type == Http.MIME_TYPE["HTML"]
     assert resp.headers["Content-Type"] == Http.MIME_TYPE["HTML"]
-    assert resp.headers["Content-Length"] == 5234
+    assert resp.headers["Content-Length"] == 5339
     assert resp.headers["Server"] == Http.SERVER
     assert resp.body is not None
     assert str(resp).startswith("HTTP/1.1 200 OK\r\n")
@@ -161,7 +167,7 @@ def test_static_js():
     assert resp.status == 200
     assert resp.mime_type == Http.MIME_TYPE["JS"]
     assert resp.headers["Content-Type"] == Http.MIME_TYPE["JS"]
-    assert resp.headers["Content-Length"] == 6880
+    assert resp.headers["Content-Length"] == 9394
     assert resp.headers["Server"] == Http.SERVER
     assert resp.body is not None
     assert str(resp).startswith("HTTP/1.1 200 OK\r\n")
@@ -181,13 +187,14 @@ def test_request_parser():
 
 
 def test_full_request_parsing_1():
-    parser = RequestStreamParser()
+    parser = RequestStreamParser("\n")
     with open(
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "request1.txt"), "r"
     ) as f:
         for line in f:
-            parser.update(line)
+            resp = parser.update(line)
 
+    assert resp is False
     req = parser.get_request()
     assert req.route.method == HTTP_METHOD.GET
     assert req.protocol == "https"
@@ -206,13 +213,14 @@ def test_full_request_parsing_1():
 
 
 def test_full_request_parsing_2():
-    parser = RequestStreamParser()
+    parser = RequestStreamParser("\n")
     with open(
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "request2.txt"), "r"
     ) as f:
         for line in f:
-            parser.update(line)
+            resp = parser.update(line)
 
+    assert resp is False
     req = parser.get_request()
     assert req.route.method == HTTP_METHOD.GET
     assert req.protocol == "https"
@@ -231,7 +239,7 @@ def test_full_request_parsing_2():
 
 
 def test_full_request_parsing_3():
-    parser = RequestStreamParser()
+    parser = RequestStreamParser("\n")
     with open(
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "request3.txt"), "r"
     ) as f:
@@ -239,6 +247,7 @@ def test_full_request_parsing_3():
             print(line.rstrip())
             resp = parser.update(line)
 
+    assert resp is False
     req = parser.get_request()
     assert req.route.method == HTTP_METHOD.POST
     assert req.route.path == "/test"
@@ -251,5 +260,11 @@ def test_full_request_parsing_3():
     assert req.header["Content-Length"] == "18"
     assert req.header["Accept-Encoding"] == "gzip, deflate, br"
 
-    assert json.loads(req.body) == json.loads('{ "key": "value" }')
-    assert len(req.body) == 18
+    assert req.body == json.loads('{ "key": "value" }')
+
+
+def test_error_resp():
+    resp = HttpResponse.err(404, "File does not exist")
+
+    assert resp.has_stream() is False
+    assert resp.body is not None

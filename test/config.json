@@ -1,0 +1,28 @@
+{
+  "wifi": {
+    "ssid": "Swart"
+  },
+  "mqtt": {
+    "ip": "10.0.0.117"
+  },
+  "location": [25.55, -23.55],
+  "peripherals": {
+    "0": {
+      "type": "sensor",
+      "name": "LevelSensor",
+      "config": {
+        "interval": "15m",
+        "trigger": null,
+        "topic": "dam/level/level1",
+        "parameters": {
+          "dam_height": { "measure": 1500, "unit": "mm" },
+          "sensor_height": { "measure": 1700, "unit": "mm" },
+          "dam_diameter": { "measure": 6, "unit": "m" }
+        }
+      }
+    }
+  },
+  "pin_mapping": {
+    "0": { "trigger_pin": 14, "echo_pin": 15 }
+  }
+}

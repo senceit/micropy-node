@@ -6,3 +6,4 @@ webrepl/**
 
 .vscode/**
 ctrl/data/**
+micropython/**
