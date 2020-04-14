@@ -6,6 +6,7 @@ stages:
 
 build:
   script:
+    - apt-get update -qq && apt-get install -yqq curl
     - curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
     - make build-prod
 
