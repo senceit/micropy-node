@@ -7,6 +7,7 @@
 
 import time
 import gc
+from machine import Timer
 
 from util import Logger
 
@@ -42,11 +43,20 @@ def save_config(req: HttpRequest):
     """
     Save config
     """
+    global device
     resp = {}
     resp["success"] = True
     with open("config.json", "w") as config:
         for l in req.body:
             config.write(l)
+
+    # set device in run mode
+    device.enable_run_mode()
+
+    # start timer to reboot device in 5 s
+    timer = Timer(-1)
+    cb = lambda _: device.reboot()
+    timer.init(period=5000, mode=Timer.ONE_SHOT, callback=cb)
 
     return HttpResponse.ok(200, Http.MIME_TYPE["JSON"], body=resp)
 

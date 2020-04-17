@@ -46,6 +46,11 @@ class ESP8266:
     def mac_addr(self):
         return machine.unique_id()
 
+    def enable_run_mode(self):
+        log.info("Enabling configuration mode on restart")
+        with open(os.path.join(self.config_path, "device_mode.py"), "w") as mode:
+            mode.write("CONFIG_MODE = False")
+
     def hard_reset(self):
         """
         Enable config mode
