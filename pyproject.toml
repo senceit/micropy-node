@@ -11,6 +11,8 @@ python = "^3.8"
 [tool.poetry.dev-dependencies]
 black = { version = "*", allow-prereleases = true }
 mpy-cross = "^1.12"
+Flask = "^1.1.2"
+flask_cors = "^3.0.8"
 
 [build-system]
 requires = ["poetry>=0.12"]

@@ -40,6 +40,11 @@ build-dev: build-common
 	htmlmin www/index.html -o build/www/index.html
 	uglifyjs --compress --mangle -o build/www/js/scripts.min.js -- www/js/scripts.js
 
+build-web:
+	cssnano www/css/style.css build/www/css/style.min.css
+	htmlmin www/index.html -o build/www/index.html
+	uglifyjs --compress --mangle -o build/www/js/scripts.min.js -- www/js/scripts.js
+
 deploy:
 	echo "Deploy"
 	python webrepl/webrepl_cli.py -p $(password) build/main.py $(ip):/main.py
