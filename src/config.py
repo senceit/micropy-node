@@ -13,9 +13,9 @@ config = {
             "trigger": None,
             "topic": "dam/level",
             "parameters": {
-                "dam_height": {"measure": 1500, "unit": "mm"},
-                "sensor_height": {"measure": 1700, "unit": "mm"},
-                "dam_diameter": {"measure": 6, "unit": "m"},
+                "dam_height": {"value": 1500, "unit": "mm"},
+                "sensor_height": {"value": 1700, "unit": "mm"},
+                "dam_diameter": {"value": 6, "unit": "m"},
             },
         },
     },

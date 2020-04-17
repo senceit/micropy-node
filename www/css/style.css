@@ -8,6 +8,7 @@ body {
 
 html {
   font-family: "Nunito", sans-serif;
+  font-size: 14px;
 }
 
 .pull-right {
@@ -324,6 +325,19 @@ a:hover {
   margin: auto;
   font-size: 1em/1.6;
 }
+
+.prepend {
+  background-color: #eee;
+  padding: 1em 0 1em 1em;
+  border-radius: 10% 0 0 10%;
+  font-size: 1em;
+  border: solid #eee;
+}
+
+.card.post {
+  margin: 1em 1em 1em 0;
+}
+
 h6 {
   font-size: 300 1em;
 }
@@ -366,19 +380,29 @@ th {
   text-transform: uppercase;
   background: #fff;
   border: solid;
-  font-size: 0.7em;
+  font-size: 0.8em;
+  font-weight: bold;
+  min-width: 100px;
 }
 
-.btn-success {
-  padding: 1em;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+.btn.btn-success {
   background: #00c853;
+}
+
+.btn.btn-delete {
   border: solid;
-  font-size: 0.7em;
+  border-color: #d50000;
+}
+
+.btn.btn-add {
+  border-color: #00c853;
 }
 
 img {
   max-width: 240px;
   max-height: 42px;
+}
+
+input {
+  font-size: 1em;
 }

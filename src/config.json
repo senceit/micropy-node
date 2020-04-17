@@ -15,9 +15,9 @@
         "trigger": null,
         "topic": "cmnd/hello",
         "parameters": {
-          "dam_height": { "measure": 330, "unit": "mm" },
-          "sensor_height": { "measure": 740, "unit": "mm" },
-          "dam_diameter": { "measure": 325, "unit": "mm" }
+          "dam_height": { "value": 330, "unit": "mm" },
+          "sensor_height": { "value": 740, "unit": "mm" },
+          "dam_diameter": { "value": 325, "unit": "mm" }
         }
       }
     }

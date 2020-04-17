@@ -25,14 +25,14 @@
         <img src="img/silogo42x136.png" />
       </div>
       <div class="2 col pull-right">
-        <a id="deviceId" href="" class="white ph2"></a>
+        <div id="deviceId" class="white ph2"></div>
       </div>
     </div>
 
     <div class="c">
       <div class="row">
         <button
-          class="btn-success pull-right"
+          class="btn btn-success pull-right"
           type="button"
           id="saveAndRestartBtn"
         >
@@ -42,7 +42,7 @@
 
       <form id="input" class="form">
         <!-- ConnectionComponent -->
-        <div id="connectionComponent">
+        <div id="connectionComponent" class="w-100 pv2">
           <h3>General Settings</h3>
           <div class="row">
             <label class="3 col">Wifi Network:</label>
@@ -109,39 +109,27 @@
         </div>
 
         <!-- ConfigurationComponent  -->
-        <div class="w-100" id="configComponent">
+        <div class="w-100 pv2" id="configComponent">
           <h3>Node Configuration</h3>
           <table class="table w-100" id="ioTable">
             <thead>
-              <th>Class</th>
               <th>Name</th>
               <th>Interval</th>
               <th>Topic</th>
+              <th></th>
             </thead>
-            <tbody>
-              <tr>
-                <td></td>
-                <td></td>
-              </tr>
-            </tbody>
+            <tbody></tbody>
           </table>
-          <div class="row">
-            <div class="2 col pull-right">
-              <button type="button" class="btn" id="addBtn">
-                Add IO
-              </button>
-            </div>
-          </div>
-          <div id="peripherals"></div>
         </div>
-        <div class="pull-right">
-          <button class="btn" type="button" id="cancelBtn">Cancel</button>
-          <button class="btn" type="button" id="saveBtn">
-            Save
+        <div class="row pv3">
+          <button type="button" class="btn btn-add pull-right" id="addIoBtn">
+            Add IO
           </button>
         </div>
+
+        <div id="peripheralConfig"></div>
       </form>
     </div>
-    <script src="js/scripts.min.js "></script>
+    <script src="js/scripts.min.js"></script>
   </body>
 </html>
