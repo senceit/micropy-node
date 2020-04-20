@@ -12,7 +12,7 @@ from machine import Timer
 from util import Logger
 
 from webserver import Webserver
-from uhttp import Http, HTTP_METHOD, HttpResponse, HttpRequest
+from uhttp import Http, HTTP_METHOD, HttpResponse, HttpRequest, HttpError
 from esp8266 import ESP8266
 
 log = Logger.getLogger()
@@ -43,12 +43,24 @@ def save_config(req: HttpRequest):
     """
     Save config
     """
+
     global device
     resp = {}
     resp["success"] = True
-    with open("config.json", "w") as config:
-        for l in req.body:
-            config.write(l)
+
+    # get wifi credentials
+    wifi_pwd = req.body["wifi"]["password"]
+    wifi_ssid = req.body["wifi"]["ssid"]
+
+    # switch wifi to STATION mode
+    if wifi_pwd and wifi_ssid:
+        with open("config.json", "w") as config:
+            for l in req.body:
+                config.write(l)
+
+        device.connect_to_wifi()
+    else:
+        raise HttpError("No wifi credentials specified", 400)
 
     # set device in run mode
     device.enable_run_mode()
