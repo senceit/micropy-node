@@ -29,9 +29,10 @@ build-common: clean compile
 	cp src/ultrasonic.py build/ultrasonic.py
 	cp src/config.json build/config.json
 	cp www/img/silogo42x136.png build/www/img/silogo42x136.png
-	cssnano www/css/style.css build/www/css/style.min.css
+	cssnano www/css/style.css build/www/css/temp.min.css
 
 build-prod: build-common
+	gzip -c build/www/css/temp.min.css > build/www/css/style.min.css && rm build/www/css/temp.min.css
 	htmlmin www/index.html | gzip -c > build/www/index.html
 	uglifyjs --compress --mangle -- www/js/scripts.js | gzip -c > build/www/js/scripts.min.js
 
@@ -39,6 +40,7 @@ build-prod: build-common
 build-dev: build-common
 	htmlmin www/index.html -o build/www/index.html
 	uglifyjs --compress --mangle -o build/www/js/scripts.min.js -- www/js/scripts.js
+	cp build/www/css/temp.min.css build/www/css/style.min.css && rm build/www/css/temp.min.css
 
 build-web:
 	cssnano www/css/style.css build/www/css/style.min.css
@@ -68,13 +70,6 @@ deploy:
 deploy-web:
 	python webrepl/webrepl_cli.py -p $(password) build/www/index.html $(ip):/www/index.html
 	python webrepl/webrepl_cli.py -p $(password) build/www/js/scripts.min.js $(ip):/www/js/scripts.min.js
-
-deploy-app:
-	# python webrepl/webrepl_cli.py -p $(password) build/main.py $(ip):/main.py
-	python webrepl/webrepl_cli.py -p $(password) build/app_run.mpy $(ip):/app_run.mpy
-	python webrepl/webrepl_cli.py -p $(password) build/esp_io.mpy $(ip):/esp_io.mpy
-	python webrepl/webrepl_cli.py -p $(password) build/config.json $(ip):/config.json
-	python webrepl/webrepl_cli.py -p $(password) build/esp8266.mpy $(ip):/esp8266.mpy
 
 test:
 	pytest --ignore=micropython/

@@ -9,16 +9,18 @@ config = {
         "LevelSensor": {
             "id": "USLS01",
             "type": "sensor",
-            "interval": "15m",
-            "trigger": None,
-            "topic": "dam/level",
-            "parameters": {
-                "dam_height": {"value": 1500, "unit": "mm"},
-                "sensor_height": {"value": 1700, "unit": "mm"},
-                "dam_diameter": {"value": 6, "unit": "m"},
+            "config": {
+                "interval": "15m",
+                "trigger": None,
+                "topic": "dam/level",
+                "parameters": {
+                    "dam_height": {"value": 1500, "unit": "mm"},
+                    "sensor_height": {"value": 1700, "unit": "mm"},
+                    "dam_diameter": {"value": 6, "unit": "m"},
+                },
             },
         },
     },
     "topic_prefix": {"sensor": "stat", "actuator": "cmnd"},
-    "pin_mapping": {"USLS01": {"trigger_pin": 14, "echo_pin": 15},},
+    "pin_mapping": {"USLS01": {"trigger_pin": 4, "echo_pin": 5},},
 }

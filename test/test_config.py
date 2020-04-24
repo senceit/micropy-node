@@ -32,7 +32,7 @@ def test_config_override():
 def test_config_mode():
     import device_mode
 
-    assert device_mode.CONFIG_MODE is False
+    assert device_mode.CONFIG_MODE is True
 
     device = ESP8266(os.path.join(os.getcwd(), "test"))
     device.hard_reset()

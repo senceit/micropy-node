@@ -2,13 +2,9 @@
 # Compatible with HC-SR04
 #
 # Copyright Roberto Sánchez
-# Copyright 2020, Niel Swart
 # Based on https://github.com/rsc1975/micropython-hcsr04/blob/master/hcsr04.py
 #
 # Apache License 2.0. https://www.apache.org/licenses/LICENSE-2.0
-#
-#
-#
 #
 ##
 
@@ -32,7 +28,7 @@ class HCSR04:
         """
         trigger_pin: Output pin to send pulses
         echo_pin: Readonly pin to measure the distance. The pin should be protected with 1k resistor
-        echo_timeout_us: Timeout in microseconds to listen to echo pin. 
+        echo_timeout_us: Timeout in microseconds to listen to echo pin.
         By default is based in sensor limit range (4m)
         """
         self.echo_timeout_us = echo_timeout_us

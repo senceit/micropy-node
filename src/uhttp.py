@@ -20,8 +20,10 @@ class Stream:
 
     def pipe(self, dest):
         with open(self.src, "rb") as reader:
-            for line in reader:
-                dest.write(line)
+            buf = reader.read(100)
+            while buf != b"":
+                dest.write(buf)
+                buf = reader.read(100)
 
 
 class File:
@@ -217,6 +219,7 @@ class RequestStreamParser:
         raw = line.rstrip()
         self._lines += 1
         self._line = raw
+
         if self._lines == 1:
             # first line
             self.validate()
@@ -245,7 +248,7 @@ class RequestStreamParser:
             return True
 
         if self._break and self._content_length and self._lines > 1:
-            return self._parse_body(raw)
+            return self._parse_body(line)
 
         return False
 
@@ -257,11 +260,15 @@ class RequestStreamParser:
 
         returns True when accepting more and False when the full body has been received
         """
+
         if not self._body:
             self._body = ""
-        self._body += line
+            if line != "" and line != self._newline and line != "\n":
+                self._body += line
+            return True
 
-        return len(self._body) != self._content_length
+        self._body += line
+        return len(self._body.encode("utf-8")) < self._content_length
 
     def _parse_header(self, line: str) -> dict:
         """
@@ -317,7 +324,7 @@ class RequestStreamParser:
                 and self._version != "HTTP/1.0"
                 and self._version != "HTTP/1.1"
             ):
-                raise HttpError("Version Not Supported", 505)
+                raise HttpError("HTTP Version Not Supported", 505)
 
     def get_request(self) -> HttpRequest:
         route = Route(self._method, self._path)
@@ -435,6 +442,8 @@ class Http:
                 request.route.path = "/index.html"
                 headers["Content-Encoding"] = "gzip"
             if request.route.path.endswith(".js"):
+                headers["Content-Encoding"] = "gzip"
+            if request.route.path.endswith(".css"):
                 headers["Content-Encoding"] = "gzip"
             file = request.route.path
             mime_type, size, filepath = fs.get_file_stat(file)

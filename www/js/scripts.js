@@ -1,3 +1,10 @@
+/**
+ * Copyright 2020 - Intersect Technologies CC
+ * SenceIt Web Configuration
+ * Author: Niel Swart <niel@nielswwart.com>
+ *
+ */
+
 var config = {
   in: {},
   out: {
@@ -127,14 +134,31 @@ class API {
       callback
     );
   }
-
-  put(path, body, callback) {}
-
-  delete(path, callback) {}
 }
 
 onDocumentReady(function () {
   const api = new API("http://192.168.4.1");
+
+  const lon = $("#lon");
+  lon.on("change", (event) => {
+    config.out["location"][0] = event.target.value;
+  });
+
+  const lat = $("#lat");
+  lat.on("change", (event) => {
+    config.out["location"][1] = event.target.value;
+  });
+
+  const geo = navigator.geolocation;
+  geo.getCurrentPosition((pos) => {
+    const _lon = Number(pos.coords.longitude.toFixed(4));
+    lon[0].value = _lon;
+    config.out.location[0] = _lon;
+
+    const _lat = Number(pos.coords.latitude.toFixed(4));
+    lat[0].value = _lat;
+    config.out.location[1] = _lat;
+  });
 
   api.get("/config", (code, resp) => {
     config.in = resp;
@@ -152,7 +176,8 @@ onDocumentReady(function () {
         console.log("Rebooting device in 3s");
         setTimeout(() => {
           console.log("Calling API");
-          api.post("/config", config.out, (resp) => {
+          api.post("/config", config.out, (code, resp) => {
+            console.log(code);
             console.log(resp);
           });
         }, 3000);
@@ -196,31 +221,9 @@ onDocumentReady(function () {
       config.out["mqtt"]["ip"] = event.target.value;
     });
 
-    const lon = $("#lon");
-    lon.on("change", (event) => {
-      config.out["location"][0] = event.target.value;
-    });
-
-    const lat = $("#lat");
-    lat.on("change", (event) => {
-      config.out["location"][1] = event.target.value;
-    });
-
-    const geo = navigator.geolocation;
-    geo.getCurrentPosition((pos) => {
-      const _lon = Number(pos.coords.longitude.toFixed(4));
-      lon[0].value = _lon;
-      config.out.location[0] = _lon;
-
-      const _lat = Number(pos.coords.latitude.toFixed(4));
-      lat[0].value = _lat;
-      config.out.location[1] = _lat;
-    });
-
     /**
      * Peripheral Configuration
      */
-
     const peripheralTable = $("#ioTable tbody");
 
     renderPeripheralTable(
@@ -248,13 +251,13 @@ onDocumentReady(function () {
         config.in.peripherals[Object.keys(config.in.peripherals)[0]];
 
       $("#mqtt_prefix")[0].innerHTML = config.in.topic_prefix[first.type] + "/";
-      $("#mqtt_topic")[0].value = first.topic;
+      $("#mqtt_topic")[0].value = first.config.topic;
 
       params[0].innerHTML = createPeripheralParams(
-        Object.keys(first.parameters).map((k) => [
+        Object.keys(first.config.parameters).map((k) => [
           toCapitalCase(k.replace("_", " ")),
           k,
-          first.parameters[k].unit,
+          first.config.parameters[k].unit,
         ])
       );
       // selection change listener
@@ -272,7 +275,7 @@ onDocumentReady(function () {
         const topic = $("#mqtt_topic")[0].value;
 
         const selected = config.in.peripherals[periph];
-        const parameters = selected.parameters;
+        const parameters = selected.config.parameters;
 
         $("#params .row input").forEach((c) => {
           parameters[c.id].value = c.value;

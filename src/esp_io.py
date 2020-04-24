@@ -88,6 +88,7 @@ class LevelSensor(Sensor):
         """
 
         level = int(sensor_height) - int(distance)
+        level = dam_height if level > dam_height else level
         level = level if level > 0 else 0
         pct = math.trunc((level / dam_height) * 100)
         if diameter:
@@ -122,7 +123,7 @@ class LevelSensor(Sensor):
         else:
             raise AttributeError("Unsupported measurement unit")
 
-        return mult * int(m["measure"])
+        return mult * int(m["value"])
 
     def stat(self):
         """

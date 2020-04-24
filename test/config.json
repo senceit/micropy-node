@@ -22,7 +22,5 @@
       }
     }
   },
-  "pin_mapping": {
-    "0": { "trigger_pin": 14, "echo_pin": 15 }
-  }
+  "pin_mapping": { "USLS01": { "trigger_pin": 4, "echo_pin": 5 } }
 }

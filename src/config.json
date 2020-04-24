@@ -3,7 +3,7 @@
     "ssid": "Swart"
   },
   "mqtt": {
-    "ip": "10.0.0.117"
+    "ip": "senceit.local"
   },
   "location": [25.55, -23.55],
   "peripherals": {

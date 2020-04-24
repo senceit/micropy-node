@@ -30,19 +30,18 @@ def get_config(request: HttpRequest):
     What do we do about security?
     """
     global device
-
     from config import config
 
-    resp = config
-    resp["networks"] = device.wifi_networks
-
-    return HttpResponse.ok(200, Http.MIME_TYPE["JSON"], body=resp)
+    config["networks"] = device.wifi_networks
+    return HttpResponse.ok(200, Http.MIME_TYPE["JSON"], body=config)
 
 
 def save_config(req: HttpRequest):
     """
     Save config
     """
+
+    import json
 
     global device
     resp = {}
@@ -55,17 +54,16 @@ def save_config(req: HttpRequest):
     # switch wifi to STATION mode
     if wifi_pwd and wifi_ssid:
         with open("config.json", "w") as config:
-            for l in req.body:
-                config.write(l)
-
-        device.connect_to_wifi()
+            config.write(json.dumps(req.body))
     else:
         raise HttpError("No wifi credentials specified", 400)
 
     # set device in run mode
+    log.info("Enabling run mode")
     device.enable_run_mode()
 
     # start timer to reboot device in 5 s
+    log.info("Rebooting in 5 seconds...")
     timer = Timer(-1)
     cb = lambda _: device.reboot()
     timer.init(period=5000, mode=Timer.ONE_SHOT, callback=cb)
@@ -74,6 +72,11 @@ def save_config(req: HttpRequest):
 
 
 def main():
+    global device
+    device.activate_ap()
+    gc.collect()
+    log.info("Free memory: {}".format(gc.mem_free()))
+
     http = Http()
 
     # Register handler for each path
@@ -91,7 +94,6 @@ def main():
         while True:
             # Let server process requests
             web.handle_client()
-
             time.sleep_ms(50)
     except Exception as err:
         log.severe("Unhandled exception: " + str(err))

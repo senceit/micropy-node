@@ -1,1 +1,1 @@
-CONFIG_MODE = False
+CONFIG_MODE = True

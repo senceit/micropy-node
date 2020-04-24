@@ -82,15 +82,15 @@ def test_http_handlers():
 
     http = Http()
     http.register_handler(
-        HTTP_METHOD.GET,
+        HTTP_METHOD.POST,
         "/config",
         lambda req: HttpResponse.ok(200, Http.MIME_TYPE["JSON"]),
     )
 
     assert len(http.handlers.items()) == 1
 
-    req = HttpRequest(Route(HTTP_METHOD.GET, "/config"), {})
-    assert http._match_route(req).method == HTTP_METHOD.GET
+    req = HttpRequest(Route(HTTP_METHOD.POST, "/config"), {})
+    assert http._match_route(req).method == HTTP_METHOD.POST
     assert http._match_route(req).path == "/config"
 
     http.handle(req)
@@ -150,7 +150,7 @@ def test_static_html():
     assert resp.status == 200
     assert resp.mime_type == Http.MIME_TYPE["HTML"]
     assert resp.headers["Content-Type"] == Http.MIME_TYPE["HTML"]
-    assert resp.headers["Content-Length"] == 5339
+    assert resp.headers["Content-Length"] == 4098
     assert resp.headers["Server"] == Http.SERVER
     assert resp.body is not None
     assert str(resp).startswith("HTTP/1.1 200 OK\r\n")
@@ -167,7 +167,7 @@ def test_static_js():
     assert resp.status == 200
     assert resp.mime_type == Http.MIME_TYPE["JS"]
     assert resp.headers["Content-Type"] == Http.MIME_TYPE["JS"]
-    assert resp.headers["Content-Length"] == 9394
+    assert resp.headers["Content-Length"] == 11659
     assert resp.headers["Server"] == Http.SERVER
     assert resp.body is not None
     assert str(resp).startswith("HTTP/1.1 200 OK\r\n")

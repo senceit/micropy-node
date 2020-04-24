@@ -24,6 +24,7 @@ def setup():
     global device
 
     device.get_config()
+    device.connect_to_wifi()
 
     id = device.id
     ip = device.get_mqtt_broker()
