@@ -130,7 +130,7 @@ class API {
     this._createRequest(
       "POST",
       this.root + path,
-      JSON.stringify(body),
+      JSON.stringify(body) + "\n",
       callback
     );
   }

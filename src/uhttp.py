@@ -265,6 +265,7 @@ class RequestStreamParser:
             self._body = ""
             if line != "" and line != self._newline and line != "\n":
                 self._body += line
+                return len(self._body.encode("utf-8")) < self._content_length
             return True
 
         self._body += line

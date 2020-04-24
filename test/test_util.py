@@ -1,4 +1,16 @@
-from util import Logger
+from util import Logger, StringBuilder
+
+
+def test_string_builder():
+    sb = StringBuilder()
+    string = sb.add("hello").space().add("world").newline().build()
+
+    assert string == "hello world\r\n"
+
+    sb = StringBuilder()
+    string = sb.add("hello").space().add("world").newline().newline().build()
+
+    assert string == "hello world\r\n\r\n"
 
 
 def test_logger_singleton():

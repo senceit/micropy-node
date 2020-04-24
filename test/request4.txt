@@ -1,0 +1,12 @@
+POST http://192.168.4.1/config HTTP/1.1
+Content-Type: application/json
+User-Agent: PostmanRuntime/7.24.1
+Accept: */*
+Cache-Control: no-cache
+Postman-Token: 11c9c2ea-9224-453b-8144-44109846e07b
+Host: 192.168.4.1
+Accept-Encoding: gzip, deflate, br
+Connection: keep-alive
+Content-Length: 378
+
+{"wifi":{"ssid":"Swart","password":"870622eta"},"mqtt":{"ip":"10.0.0.114"},"location":["25","-23"],"peripherals":{"0":{"type":"sensor","name":"LevelSensor","id":"USLS01","config":{"interval":"1m","trigger":null,"topic":"dam/level/1","parameters":{"dam_height":{"value":"1500","unit":"mm"},"sensor_height":{"value":"1700","unit":"mm"},"dam_diameter":{"value":"5","unit":"m"}}}}}}
