@@ -1,0 +1,5 @@
+build/**
+firmware/**
+webrepl/**
+micropython/**
+.env

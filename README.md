@@ -1,4 +1,6 @@
-# SensorNode
+# SenceIt
+
+## SensorNode
 
 A MicroPython sensor node device.
 
