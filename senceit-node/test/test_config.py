@@ -35,7 +35,7 @@ def test_config_mode():
     assert device_mode.CONFIG_MODE is True
 
     device = ESP8266(os.path.join(os.getcwd(), "test"))
-    device.hard_reset()
+    device.hard_reset(0)
 
     import test.device_mode
 

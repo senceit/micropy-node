@@ -127,7 +127,7 @@ def test_static_js():
     assert resp.status == 200
     assert resp.mime_type == Http.MIME_TYPE["JS"]
     assert resp.headers["Content-Type"] == Http.MIME_TYPE["JS"]
-    assert resp.headers["Content-Length"] == 11659
+    assert resp.headers["Content-Length"] == 11720
     assert resp.headers["Server"] == Http.SERVER
     assert resp.body is not None
     assert str(resp).startswith("HTTP/1.1 200 OK\r\n")

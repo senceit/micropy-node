@@ -250,7 +250,8 @@ onDocumentReady(function () {
       const first =
         config.in.peripherals[Object.keys(config.in.peripherals)[0]];
 
-      $("#mqtt_prefix")[0].innerHTML = config.in.topic_prefix[first.type] + "/";
+      const prefix = `${config.in.topic_prefix[first.type]}/${config.in.id}/`;
+      $("#mqtt_prefix")[0].innerHTML = prefix;
       $("#mqtt_topic")[0].value = first.config.topic;
 
       params[0].innerHTML = createPeripheralParams(
@@ -290,7 +291,7 @@ onDocumentReady(function () {
           config: {
             interval: interval,
             trigger: null,
-            topic: topic,
+            topic: prefix + topic,
             parameters: parameters,
           },
         };

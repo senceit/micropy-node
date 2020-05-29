@@ -7,7 +7,7 @@
 
 import time
 import gc
-from machine import Timer
+from machine import Timer, Pin
 
 from util import Logger
 
@@ -73,6 +73,7 @@ def save_config(req: HttpRequest):
 
 def main():
     global device
+
     device.activate_ap()
     gc.collect()
     log.info("Free memory: {}".format(gc.mem_free()))
@@ -89,6 +90,8 @@ def main():
     web = Webserver(http)
     web.start(80)
     gc.collect()
+
+    device.indicate_ready()
 
     try:
         while True:
