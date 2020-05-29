@@ -1,4 +1,4 @@
-image: python:3.8-slim-buster
+image: python:3.7-slim-buster
 
 stages:
   - build
@@ -6,17 +6,22 @@ stages:
 
 default:
   before_script:
-    - apt-get update -qq && apt-get install -yqq curl make
+    - apt-get update -qq && apt-get install -yqq curl make nodejs npm
     - curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
     - source $HOME/.poetry/env
+    - npm --version
+    - node --version
+    - npm install -g npm
+    - npm install cssnano-cli uglify-js html-minifier-cli --global
+    - cd ./senceit-node
     - poetry install
 
-build:
+build:node:
   stage: build
   script:
     - make build-prod
 
-test:
+test:node:
   stage: test
   script:
     - make test

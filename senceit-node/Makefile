@@ -71,7 +71,14 @@ deploy-web:
 	python webrepl/webrepl_cli.py -p $(password) build/www/index.html $(ip):/www/index.html
 	python webrepl/webrepl_cli.py -p $(password) build/www/js/scripts.min.js $(ip):/www/js/scripts.min.js
 
+deploy-app:
+	python webrepl/webrepl_cli.py -p $(password) build/app_config.mpy $(ip):/app_config.mpy
+	python webrepl/webrepl_cli.py -p $(password) build/app_run.mpy $(ip):/app_run.mpy
+
+config-mode:
+	python webrepl/webrepl_cli.py -p $(password) build/device_mode.py $(ip):/device_mode.py
+
 test:
-	pytest --ignore=micropython/
+	poetry run pytest --ignore=micropython/
 
 .PHONY: all clean build-dev build-prod deploy test

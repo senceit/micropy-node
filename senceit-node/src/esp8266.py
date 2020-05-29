@@ -16,6 +16,12 @@ log = Logger.getLogger()
 class ESP8266:
     def __init__(self, config_path=""):
         self.config_path = config_path
+        self.status_timer = None
+        self.hard_reset_ref = self.hard_reset
+        p_reset = machine.Pin(0, machine.Pin.IN)
+        p_reset.irq(self.handle_reset, trigger=machine.Pin.IRQ_FALLING)
+        self.led = machine.Pin(2, mode=machine.Pin.OUT)
+        self.led.value(1)
 
     @property
     def wifi_networks(self):
@@ -57,7 +63,19 @@ class ESP8266:
         with open(self._get_config_path(), "w",) as mode:
             mode.write("CONFIG_MODE = False")
 
-    def hard_reset(self):
+    def handle_reset(self, p):
+        machine.disable_irq()
+
+        import micropython
+        import time
+
+        if p.value() == 0:
+            time.sleep_ms(500)
+            if p.value() == 0:
+                print("Resetting Device...")
+                micropython.schedule(self.hard_reset_ref, 0)
+
+    def hard_reset(self, args):
         """
         Enable config mode
         """
@@ -71,7 +89,9 @@ class ESP8266:
 
         for i in range(5):
             log.info("Restarting in {}s".format(5 - i))
+            self.led.value(0)
             time.sleep(1)
+            self.led.value(1)
 
         self.reboot()
 
@@ -152,10 +172,26 @@ class ESP8266:
             )
 
     def start(self):
+
+        self.status_timer = machine.Timer(-1)
+        cb = lambda _: self.led.value(0) if self.led.value() == 1 else self.led.value(1)
+        self.status_timer.init(period=5000, mode=machine.Timer.PERIODIC, callback=cb)
+
         for k, l in self.loggers.items():
             l.start()
 
+        self.indicate_ready()
         machine.idle()
+
+    def indicate_ready(self):
+        import time
+
+        time.sleep_ms(500)
+        for i in range(0, 3):
+            self.led.value(0)
+            time.sleep_ms(250)
+            self.led.value(1)
+            time.sleep_ms(100)
 
     def get_stats(self):
         import gc
