@@ -1,5 +1,10 @@
 # SenceIt
 
+## Project Structure
+
+* senceit-node - contains the micropython code that can be deployed to an ESP8266 device
+* senceit-ctrl - A NodeRED server and MQTT broker running as docker containers
+
 ## SensorNode
 
 A MicroPython sensor node device.
@@ -20,7 +25,7 @@ Getting the latest firmware
 curl http://micropython.org/resources/firmware/esp8266-20191220-v1.12.bin -o ./firmware/esp8266-20191220-v1.12.bin
 ```
 
-NOTE: USB and serial devices are currently not supported on WSL 2 and you need to do this part in windows
+WINDOWS NOTE: USB and serial devices are currently not supported in WSL 2 and you need to do this part in Windows
 
 In order to minify the static content on the webserver install
 
