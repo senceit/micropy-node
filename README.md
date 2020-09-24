@@ -3,6 +3,9 @@
 ## Project Structure
 
 * senceit-node - contains the micropython code that can be deployed to an ESP8266 device
+
+
+
 * senceit-ctrl - A NodeRED server and MQTT broker running as docker containers
 
 ## SensorNode
@@ -47,6 +50,8 @@ esptool.py --port COM3 --baud 460800 write_flash --flash_size=detect 0 .\firmwar
 The device should now be available as a Wifi access point with ESSID in the form MicroPython-xxxxxx
 
 ### Enable Webrepl with password
+
+TODO
 
 ## Build
 
