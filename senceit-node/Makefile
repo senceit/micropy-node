@@ -7,7 +7,12 @@ OUT = $(subst src/,build/, $(IN2))
 
 default: build-dev
 
-setup:
+install-deps:
+	npm install -g html-minifier-cli
+	npm install -g cssnano
+	npm install -g uglify-es
+
+setup: install-deps
 	echo "Install webrepl"
 	echo "Downloading MicroPython for Esp8266"
 	curl http://micropython.org/resources/firmware/esp8266-20191220-v1.12.bin -o ./firmware/esp8266-20191220-v1.12.bin
