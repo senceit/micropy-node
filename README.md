@@ -7,7 +7,6 @@ NOTE:  This is not Arduino compatible.
 ## Project Structure
 
 * senceit-node - contains the micropython code that can be deployed to an ESP8266 device
-
 * senceit-ctrl - A NodeRED server and MQTT broker running as docker containers
 
 ## SensorNode
@@ -16,7 +15,9 @@ A MicroPython sensor node device.
 
 Tested with the ESP8266 NodeMCU device
 
-## Environment setup
+This section applies to the `./senceit-node` project in the repository
+
+### Environment setup
 
 You should have python installed with pip. 
 
@@ -52,7 +53,7 @@ or download version `1.12` from https://micropython.org/download/esp8266/ and sa
 
 WSL NOTE: USB and serial devices are currently not supported in WSL 2 and you need to do this part in Windows
 
-### Erasing the device flash with esptool
+#### Erasing the device flash with esptool
 
 To enable ESP8266 firmware flashing GPIO0 pin must be pulled low before the device is reset.
 Put the NodeMCU board in flash mode by
@@ -77,11 +78,11 @@ Replace the path to the firmware you downloaded in the command above.
 
 The device should now be available as a Wifi access point with ESSID in the form MicroPython-xxxxxx
 
-### Enable Webrepl with password
+#### Enable Webrepl with password
 
 TODO
 
-## Build
+### Build
 
 Install poetry
 
@@ -89,7 +90,7 @@ Install poetry
 curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 ```
 
-### Install the necessary build tooling
+#### Install the necessary build tooling
 
 **ALL**
 
@@ -131,3 +132,5 @@ make deploy
 cd ./gateway
 docker-compose up -d
 ```
+
+## SenceIt-Ctrl
