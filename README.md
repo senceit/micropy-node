@@ -15,7 +15,8 @@ A MicroPython sensor node device.
 
 Tested with the ESP8266 NodeMCU device
 
-This section applies to the `./senceit-node` project in the repository
+This section applies to the `./senceit-node` project in the repository:
+
 
 ### Environment setup
 
@@ -25,7 +26,11 @@ You should have python installed with pip.
 
 - Download: https://www.python.org/downloads/windows/ and follow the instructions to install python and pip
 
-Open a command prompt and type:
+Open a command prompt or powershell and change your directory to:
+
+```pwsh
+cd ./senceit-node
+```
 
 ```cmd
 pip install esptool
@@ -126,11 +131,13 @@ make build
 make deploy
 ```
 
-### Run SenceIt Ctrl software
+## SenceIt-Ctrl
+
+This section applies to the `./senceit-ctrl` project
+
+### Run
 
 ```bash
-cd ./gateway
+cd ./senceit-ctrl/gateway
 docker-compose up -d
 ```
-
-## SenceIt-Ctrl
