@@ -20,11 +20,13 @@ This section applies to the `./senceit-node` project in the repository:
 
 ### Environment setup
 
-You should have python installed with pip. 
+You need to have python installed with pip. 
+You also need to install Node.js and npm to run the web build scripts
 
 **Windows**: 
 
 - Download: https://www.python.org/downloads/windows/ and follow the instructions to install python and pip
+- Download: https://nodejs.org/en/download/ and follow the insturction to install Node and npm
 
 Open a command prompt or powershell and change your directory to:
 
